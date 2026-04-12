@@ -1,5 +1,4 @@
 # d3t/docker-compose.yml
-version: '3.8'
 
 services:
   redis:
