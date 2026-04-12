@@ -1,0 +1,104 @@
+.root {
+  min-height: 100vh;
+  padding: 16px 20px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.bannerRow { margin-bottom: 4px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ── Sidebar ─────────────────────────────────────── */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 16px;
+}
+
+.sideHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.addBtn {
+  background: var(--mild);
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.addBtn:hover:not(:disabled) { background: #18896a; }
+
+.addErr {
+  color: var(--severe);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.patientList {
+  max-height: calc(100vh - 360px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ── Detail pane ─────────────────────────────────── */
+.detail { min-width: 0; }
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.detailHeader h2 { font-size: 18px; }
+
+.sevPill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+  color: #fff;
+}
+
+.meta {
+  color: var(--text-dim);
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+}

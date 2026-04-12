@@ -1,0 +1,33 @@
+.wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 16px 10px;
+}
+
+.wrap h2 { margin-bottom: 14px; }
+
+.empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 32px 16px;
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+}
+
+.tooltip {
+  background: #1a1d27;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ttDay {
+  color: var(--text-dim);
+  font-size: 11px;
+  margin-bottom: 2px;
+}

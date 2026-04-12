@@ -1,0 +1,42 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# ── Generated ML artefacts (re-created by train.py / runtime) ─────────────────
+backend/model.joblib
+backend/data/feature_importance.json
+backend/data/seir_particles.json
+backend/data/outcomes.db
+backend/data/retrain_log.jsonl
+# keep dengue_dataset.csv — it is the committed synthetic seed dataset
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# named volumes are managed by Docker; nothing to ignore here
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo

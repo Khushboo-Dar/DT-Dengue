@@ -1,0 +1,102 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.panel h2 { margin-bottom: 14px; }
+
+.sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sliders label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.sliders label span strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.runBtn {
+  width: 100%;
+  background: var(--mild);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px;
+  border-radius: 7px;
+}
+
+.runBtn:hover:not(:disabled) { background: #18896a; }
+
+.error {
+  color: var(--severe);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.scenarioList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 14px 0 10px;
+}
+
+.scenBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #1a1d27;
+  transition: border-color 0.2s;
+}
+
+.recommended {
+  border-color: var(--mild) !important;
+  background: rgba(29, 158, 117, 0.1);
+}
+
+.recTag {
+  background: var(--mild);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.peakSev {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.tooltip {
+  background: #1a1d27;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ttHour {
+  color: var(--text-dim);
+  font-size: 11px;
+  margin-bottom: 2px;
+}

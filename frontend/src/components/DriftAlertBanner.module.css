@@ -1,0 +1,40 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(186, 117, 23, 0.18);
+  border: 1px solid var(--moderate);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.icon {
+  font-size: 16px;
+  color: var(--moderate);
+  flex-shrink: 0;
+}
+
+.message {
+  flex: 1;
+  font-size: 13px;
+  color: #e8c87a;
+}
+
+.message strong { color: #f5d78e; }
+
+.dismiss {
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.dismiss:hover { background: rgba(255,255,255,0.08); color: var(--text); }
