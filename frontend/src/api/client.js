@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const api = axios.create({ baseURL: BASE_URL, timeout: 15000 });
+const api = axios.create({ baseURL: BASE_URL, timeout: 30000 });
 
 export async function predict(payload) {
   const { data } = await api.post('/predict', payload);
@@ -26,6 +26,31 @@ export async function submitOutcome(payload) {
 
 export async function getDashboardSummary() {
   const { data } = await api.get('/dashboard/summary');
+  return data;
+}
+
+export async function getForecast(patientId) {
+  const { data } = await api.get(`/forecast/${patientId}`);
+  return data;
+}
+
+export async function getModelMetrics() {
+  const { data } = await api.get('/model/metrics');
+  return data;
+}
+
+export async function getHospitalForecast() {
+  const { data } = await api.get('/hospital/forecast');
+  return data;
+}
+
+export async function getDemoScenarios() {
+  const { data } = await api.get('/demo/scenarios');
+  return data;
+}
+
+export async function runDemoScenario(scenarioId) {
+  const { data } = await api.post(`/demo/run/${scenarioId}`);
   return data;
 }
 

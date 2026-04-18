@@ -1,8 +1,9 @@
 .wrap {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 16px 16px 10px;
+  margin-top: 12px;
 }
 
 .wrap h2 { margin-bottom: 14px; }

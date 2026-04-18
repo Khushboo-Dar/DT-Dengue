@@ -1,77 +1,56 @@
-# D3T — Dynamic Dengue Digital Twin
+# D3T — Dynamic Dengue Digital Twin v2
 
-A real-time AI-powered clinical monitoring system for dengue hemorrhagic fever.
-The system maintains a **living digital twin** of each patient — predicting severity, tracking clinical trajectory over time, simulating treatment scenarios, and auto-retraining when the model drifts.
+> A real-time, AI-powered clinical intelligence platform for dengue haemorrhagic fever. Maintains a **living digital twin** of every patient — predicting severity, forecasting 7 days ahead with uncertainty bands, explaining every prediction via SHAP, simulating treatment counterfactuals, and self-retraining when the clinical population drifts.
 
 ---
 
-## Architecture at a glance
+## What's New in v2
+
+| Feature | Detail |
+|---|---|
+| **XGBoost classifier** | Replaces RandomForest — faster, higher AUC, native feature importance |
+| **5 new clinical features** | Hematocrit, NS1 antigen, AST/ALT ratio, Pulse Pressure, Warning Sign count |
+| **WHO severity alignment** | Labels now map to dengue without/with warning signs/severe dengue (WHO 2009) |
+| **SHAP explainability** | Every prediction returns top-5 SHAP values — "why severe?" answered instantly |
+| **7-day predictive forecast** | Monte Carlo forward projection (n=200 particles) with P5/P50/P95 confidence bands |
+| **Hospital Command Centre** | Aggregate severity census, ICU demand estimate, risk queue sorted by P(severe) |
+| **Model Metrics panel** | Calibration curve, ROC-AUC per class, confusion matrix heatmap, Brier score |
+| **Patient Admission Form** | Structured clinical input with WHO warning signs checklist |
+| **Pre-scripted demo scenarios** | 4 scripted journeys: deterioration, treatment response, outbreak surge, drift+retrain |
+| **Prometheus + Grafana** | Live observability: inference latency, request rate, WebSocket connections |
+| **Tabbed UI** | Patients · Hospital · Model Metrics tabs with inner forecast/trajectory/SHAP/CF tabs |
+| **Risk gauge** | SVG arc speedometer per patient card |
+
+---
+
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  Browser  →  React 18 + Recharts (port 3000)                    │
-│               ↕ REST + WebSocket                                │
-│  FastAPI  →  sklearn RF · EKF state (Redis) · SEIR PF          │
-│               ↕                                                 │
-│  Redis 7  (patient EKF state)   SQLite (outcomes)              │
-└─────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│  Browser  →  React 18 + Vite (port 3000)                               │
+│               ↕ REST + WebSocket                                       │
+│  FastAPI v2  →  XGBoost · SHAP · EKF (Redis) · SEIR PF · Forecaster   │
+│               ↕                                                        │
+│  Redis 7 (EKF state)    SQLite (outcomes)    model.joblib (XGBoost)    │
+│               ↕                                                        │
+│  Prometheus (port 9090)  →  Grafana (port 3001)                        │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 | Layer | Technology |
-|-------|-----------|
-| Backend | Python 3.11 · FastAPI · scikit-learn · Redis · SQLite |
-| Frontend | React 18 · Vite · Recharts · plain CSS Modules |
-| Inference | joblib-serialised RandomForestClassifier (`model.joblib`) |
-| State | Extended Kalman Filter per patient, stored in Redis |
+|---|---|
+| Backend | Python 3.11 · FastAPI 0.110 · XGBoost 2.0 · SHAP 0.45 · scikit-learn 1.4 |
+| State | Extended Kalman Filter per patient (Redis 7) |
 | Epidemiology | SEIR Particle Filter (500 particles) |
-| Drift | Page-Hinkley detector · async auto-retrain |
+| Explainability | SHAP TreeExplainer |
+| Forecasting | Monte Carlo EKF forward projection (7 days, n=200) |
+| Drift | Page-Hinkley detector · async auto-retrain with SMOTE |
+| Frontend | React 18 · Vite 5 · Recharts · CSS Modules |
+| Observability | Prometheus + Grafana |
 
 ---
 
-## Option A — Docker (recommended for any OS)
-
-This is the fastest path. One command builds everything, trains the model, and starts all services.
-
-### Prerequisites
-
-| Tool | Minimum version |
-|------|----------------|
-| Docker Engine | 24+ |
-| Docker Compose | v2 (bundled with Docker Desktop / Engine) |
-
-#### Install Docker on Ubuntu
-
-```bash
-# Remove old versions
-sudo apt-get remove -y docker docker-engine docker.io containerd runc 2>/dev/null
-
-# Add Docker's official repo
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-  https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
-  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-# Allow running docker without sudo (log out and back in after this)
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify
-docker --version
-docker compose version
-```
-
-### Clone and run
+## Quick Start (Docker — recommended)
 
 ```bash
 git clone <your-repo-url> d3t
@@ -79,291 +58,233 @@ cd d3t
 docker compose up --build
 ```
 
-> **First build takes ~5 minutes** — pip installs all Python deps and trains the RandomForest model.
-> Subsequent starts (no `--build`) take ~10 seconds.
+> First build takes ~8–10 minutes (installs XGBoost/SHAP, generates data, trains model).
+> Subsequent starts with no code changes: `docker compose up` (~15 seconds).
 
-### Check it's running
+### Service URLs
 
-| Service | URL |
-|---------|-----|
-| Frontend UI | http://localhost:3000 |
-| API docs (Swagger) | http://localhost:8000/docs |
-| API health | http://localhost:8000/dashboard/summary |
+| Service | URL | Credentials |
+|---|---|---|
+| Frontend UI | http://localhost:3000 | — |
+| API docs (Swagger) | http://localhost:8000/docs | — |
+| Health check | http://localhost:8000/health | — |
+| Prometheus | http://localhost:9090 | — |
+| Grafana | http://localhost:3001 | admin / d3t_admin |
 
 ### Stop
 
 ```bash
-docker compose down          # stops containers, keeps data volumes
-docker compose down -v       # also deletes Redis data volume
+docker compose down          # stops containers, keeps volumes
+docker compose down -v       # also deletes Redis + Grafana data
 ```
 
 ---
 
-## Option B — Local development (Ubuntu)
+## Local Development (Ubuntu / WSL)
 
-Use this when you want live hot-reload on both backend and frontend without Docker overhead.
-
-### 1. System dependencies
+### Prerequisites
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y python3.11 python3.11-venv python3.11-dev \
-                        build-essential curl git redis-server
-```
+# Python 3.11
+sudo apt-get install -y python3.11 python3.11-venv python3.11-dev build-essential
 
-Verify Python version:
-```bash
-python3.11 --version   # must be 3.11.x
-```
-
-#### Install Node.js 20 (via NodeSource)
-
-```bash
+# Node.js 20
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
-node --version    # v20.x.x
-npm --version
-```
 
-#### Start Redis
-
-```bash
-sudo systemctl enable redis-server
+# Redis
+sudo apt-get install -y redis-server
 sudo systemctl start redis-server
-redis-cli ping    # should return PONG
 ```
 
----
-
-### 2. Backend setup
+### Backend
 
 ```bash
 cd d3t/backend
-
-# Create virtual environment
-python3.11 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install --upgrade pip
+python3.11 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-```
 
-#### Generate dataset + train model (one-time)
+# One-time: generate data + train XGBoost model
+python generate_synthetic_data.py
+python train.py
 
-```bash
-# Inside backend/ with venv activated
-python generate_synthetic_data.py   # creates data/dengue_dataset.csv
-python train.py                      # creates model.joblib + data/feature_importance.json
-```
-
-You should see a classification report printed and:
-```
-Model saved to model.joblib
-Training complete.
-```
-
-#### Start the backend server
-
-```bash
+# Start server
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The terminal will print the D3T startup banner with green checkmarks for each component.
-
----
-
-### 3. Frontend setup
-
-Open a **second terminal**:
+### Frontend
 
 ```bash
 cd d3t/frontend
-npm install          # first time only — installs React, Recharts, axios, Vite
+npm install
 npm run dev
 ```
 
-Vite prints:
-```
-  VITE v5.x.x  ready in Xms
-  ➜  Local:   http://localhost:3000/
-```
+Open http://localhost:3000.
 
 ---
 
-### 4. Environment variables (local)
+## Feature Vector (24 features)
 
-The defaults work out of the box for local dev. To override, create `backend/.env` (never committed):
-
-```env
-REDIS_URL=redis://localhost:6379
-MODEL_PATH=model.joblib
-DATA_DIR=data
-```
-
-For the frontend, create `frontend/.env.local`:
-
-```env
-VITE_API_URL=http://localhost:8000
-```
+| # | Feature | Description |
+|---|---|---|
+| 0 | WBC | White blood cell count (×10³/μL) |
+| 1 | Platelets | Platelet count (×10³/μL) · critical <20 |
+| 2 | **Hematocrit** | % — rise >20% from baseline = plasma leakage (WHO criterion) |
+| 3 | **NS1_antigen** | NS1 antigen test result (1=positive, 0=negative) |
+| 4 | **AST_ALT_ratio** | Liver involvement marker — >2 indicates hepatitis |
+| 5 | **pulse_pressure** | Systolic−Diastolic mmHg — <20 = impending dengue shock |
+| 6 | **warning_signs** | Count of WHO warning signs present (0–5) |
+| 7–12 | Temp_lag1–6 | Ambient temperature (°C) past 6 days |
+| 13–18 | Rain_lag1–6 | Rainfall (mm) past 6 days |
+| 19 | SEIR_Beta | Community transmission rate from particle filter |
+| 20 | day_of_illness | Current day since symptom onset |
+| 21 | platelet_trend | EKF-estimated platelet velocity (rate of change) |
+| 22 | WBC_trend | EKF-estimated WBC velocity |
+| 23 | PSOS_prior | Previous prediction's P(severe) — temporal memory |
 
 ---
 
-## API endpoints
+## API Endpoints
 
 | Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/predict` | Run inference for a patient, update EKF state |
-| `POST` | `/simulate/counterfactual` | Simulate up to 5 treatment scenarios |
-| `POST` | `/seir/update` | Feed weekly case count into particle filter |
-| `POST` | `/outcome` | Record a confirmed severity outcome |
-| `GET`  | `/patient/{id}/history` | EKF state + outcome history for a patient |
-| `GET`  | `/dashboard/summary` | System-wide stats (patients tracked, drift, beta) |
-| `WS`   | `/ws/alerts` | WebSocket — receives drift and retrain events |
+|---|---|---|
+| `POST` | `/predict` | Run inference · update EKF · compute SHAP · check drift |
+| `POST` | `/simulate/counterfactual` | Treatment scenario simulation (up to 5 scenarios, 72h horizon) |
+| `POST` | `/seir/update` | Update SEIR particle filter with weekly case count |
+| `POST` | `/outcome` | Record confirmed severity outcome (feeds retraining) |
+| `GET` | `/patient/{id}/history` | EKF state + outcome history |
+| `GET` | `/forecast/{id}` | **NEW** 7-day Monte Carlo predictive trajectory with 90% CI bands |
+| `GET` | `/hospital/forecast` | **NEW** Aggregate: severity census, ICU demand, risk queue |
+| `GET` | `/model/metrics` | **NEW** Validation metrics: ROC-AUC, calibration, confusion matrix |
+| `GET` | `/dashboard/summary` | System stats: patients, drift alerts, beta, retrain time |
+| `GET` | `/demo/scenarios` | **NEW** List pre-scripted demo scenario metadata |
+| `POST` | `/demo/run/{id}` | **NEW** Execute a full demo scenario, returns all prediction results |
+| `GET` | `/health` | Redis ping, model loaded, SHAP ready, version |
+| `GET` | `/metrics` | **NEW** Prometheus metrics endpoint |
 
 Full interactive docs at **http://localhost:8000/docs**.
 
-### Quick smoke test
+---
 
-```bash
-# 1. Predict
-curl -s -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"patient_id":"P001","day_of_illness":3,"WBC":3.5,"Platelets":85}' \
-  | python3 -m json.tool
+## Demo Script (5-minute presentation flow)
 
-# 2. Dashboard
-curl -s http://localhost:8000/dashboard/summary | python3 -m json.tool
-
-# 3. Counterfactual simulation
-curl -s -X POST http://localhost:8000/simulate/counterfactual \
-  -H "Content-Type: application/json" \
-  -d '{
-    "patient_id": "P001",
-    "scenarios": [
-      {"label": "No Treatment",    "iv_fluid_effect": 0,  "platelet_recovery_rate": 0},
-      {"label": "Aggressive",      "iv_fluid_effect": 90, "platelet_recovery_rate": 15}
-    ]
-  }' | python3 -m json.tool
-
-# 4. SEIR update
-curl -s -X POST http://localhost:8000/seir/update \
-  -H "Content-Type: application/json" \
-  -d '{"week_end_date":"2025-04-12","new_cases":312}' \
-  | python3 -m json.tool
-
-# 5. Verify Redis stored EKF state (Docker)
-docker exec d3t-redis-1 redis-cli GET patient:P001:ekf
-
-# 5b. Verify Redis (local)
-redis-cli GET patient:P001:ekf
-```
+1. Open http://localhost:3000
+2. Click **▶ Deterioration** in the demo bar — watch Patient DEMO-A admitted on day 2 (mild), progressively worsening to severe by day 5. The trajectory chart and 7-day forecast both show the impending deterioration.
+3. Click the patient → **SHAP Why?** tab — see which features (Hematocrit rise, pulse pressure drop, warning signs) drove the severe prediction.
+4. Click **Treatment Sim** → Run Simulation — compare aggressive vs no-treatment P(severe) trajectories over 72h.
+5. Click **▶ Outbreak Surge** — watch SEIR beta jump and P(severe) rise across all patients simultaneously, demonstrating the SEIR→individual coupling.
+6. Click **▶ Drift+Retrain** — watch the amber drift alert banner appear via WebSocket, then the green "retrained" banner when the model hot-swaps.
+7. Click **Hospital** tab — see the severity donut, ICU demand estimate, and risk queue.
+8. Click **Model Metrics** tab — show calibration curve (should be near-diagonal), ROC-AUC bars, confusion matrix.
 
 ---
 
-## Project structure
+## Project Structure
 
 ```
 d3t/
 ├── docker-compose.yml
-├── .gitignore
-├── README.md
+├── prometheus.yml
+├── grafana/
+│   └── provisioning/          # Auto-provisioned datasource + dashboard
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── config.py                  # env var config
-│   ├── generate_synthetic_data.py # creates 2,000 synthetic patient records
-│   ├── train.py                   # trains RF, saves model.joblib
-│   ├── main.py                    # FastAPI app — all endpoints + WebSocket
-│   ├── features.py                # builds 19-feature vector
-│   ├── ekf_state.py               # Extended Kalman Filter (Redis-backed)
-│   ├── seir_model.py              # SEIR ODE
-│   ├── seir_particle_filter.py    # 500-particle Bayesian SEIR calibration
-│   ├── drift_detector.py          # Page-Hinkley drift detector
-│   ├── retrain_pipeline.py        # async SMOTE retraining pipeline
-│   ├── counterfactual_engine.py   # EKF propagation for treatment paths
-│   ├── outcomes_db.py             # aiosqlite CRUD
-│   └── data/
-│       ├── dengue_dataset.csv     # committed seed dataset (2,000 records)
-│       ├── model.joblib           # generated — gitignored
-│       ├── outcomes.db            # generated at runtime — gitignored
-│       ├── seir_particles.json    # generated at runtime — gitignored
-│       └── feature_importance.json # generated at runtime — gitignored
+│   ├── config.py
+│   ├── main.py                # FastAPI app — 12 endpoints + WebSocket
+│   ├── features.py            # 24-feature vector builder
+│   ├── ekf_state.py           # Extended Kalman Filter (Redis-backed)
+│   ├── explainer.py           # SHAP TreeExplainer
+│   ├── forecaster.py          # 7-day Monte Carlo forward projection
+│   ├── seir_model.py          # SEIR ODE solver
+│   ├── seir_particle_filter.py# 500-particle Bayesian SEIR calibration
+│   ├── drift_detector.py      # Page-Hinkley concept drift detector
+│   ├── retrain_pipeline.py    # Async SMOTE XGBoost retraining
+│   ├── counterfactual_engine.py# EKF treatment propagation
+│   ├── outcomes_db.py         # aiosqlite CRUD
+│   ├── generate_synthetic_data.py  # WHO-aligned synthetic data generator
+│   ├── train.py               # Training + validation metrics
+│   ├── demo_scenarios.json    # Pre-scripted demo patient journeys
+│   └── data/                  # (generated at runtime — gitignored)
 └── frontend/
     ├── Dockerfile
     ├── package.json
-    ├── vite.config.js
-    ├── index.html
     └── src/
-        ├── main.jsx
-        ├── App.jsx                # global state + WebSocket lifecycle
+        ├── App.jsx
         ├── index.css
-        ├── api/
-        │   └── client.js          # axios wrapper for all API calls
+        ├── api/client.js
         └── components/
-            ├── Dashboard.jsx      # two-column master layout
-            ├── PatientCard.jsx    # 72px compact patient row
-            ├── TrajectoryChart.jsx # PSOS probability over illness day
-            ├── CounterfactualPanel.jsx # treatment simulation sliders + chart
-            ├── SEIRStatus.jsx     # SVG arc gauge for community β
-            └── DriftAlertBanner.jsx # amber WebSocket alert banner
+            ├── Dashboard.jsx          # Master layout with 3 tabs
+            ├── PatientAdmissionForm.jsx  # Clinical input form
+            ├── PatientCard.jsx        # Risk gauge arc + severity badge
+            ├── TrajectoryChart.jsx    # PSOS over illness day
+            ├── ForecastChart.jsx      # 7-day forecast with CI bands
+            ├── SHAPChart.jsx          # SHAP waterfall bar chart
+            ├── CounterfactualPanel.jsx# Treatment simulation
+            ├── HospitalPanel.jsx      # Hospital command centre
+            ├── MetricsPanel.jsx       # Calibration, AUC, confusion matrix
+            ├── SEIRStatus.jsx         # Community β gauge
+            └── DriftAlertBanner.jsx   # Drift + retrain alerts
+```
+
+---
+
+## Smoke Tests
+
+```bash
+# 1. Health check
+curl http://localhost:8000/health
+
+# 2. Predict with full v2 features
+curl -s -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "patient_id":"P001","day_of_illness":4,
+    "WBC":2.8,"Platelets":55,"Hematocrit":46.0,
+    "NS1_antigen":1.0,"AST_ALT_ratio":2.1,
+    "pulse_pressure":25,"warning_signs":3
+  }' | python3 -m json.tool
+
+# 3. 7-day forecast
+curl http://localhost:8000/forecast/P001 | python3 -m json.tool
+
+# 4. Hospital view
+curl http://localhost:8000/hospital/forecast | python3 -m json.tool
+
+# 5. Model metrics
+curl http://localhost:8000/model/metrics | python3 -m json.tool
+
+# 6. Run demo scenario
+curl -s -X POST http://localhost:8000/demo/run/classic_deterioration | python3 -m json.tool
 ```
 
 ---
 
 ## Troubleshooting
 
-### Port already in use
-
+### Port in use
 ```bash
-# Find and kill what's using port 8000 or 3000
+# Linux/WSL
 sudo lsof -ti :8000 | xargs kill -9
 sudo lsof -ti :3000 | xargs kill -9
 ```
 
-### Redis connection refused (local)
-
-```bash
-sudo systemctl status redis-server
-sudo systemctl start redis-server
-```
-
-### Backend can't find model.joblib
-
-You haven't run training yet:
+### Backend can't find model.joblib (local)
 ```bash
 cd backend && source venv/bin/activate
 python generate_synthetic_data.py && python train.py
 ```
 
-### Docker: permission denied on /var/run/docker.sock
-
-```bash
-sudo usermod -aG docker $USER
-newgrp docker   # apply without logout
-```
-
-### Docker: old build cache causing issues
-
+### Docker: old build cache (after changing requirements)
 ```bash
 docker compose down -v
 docker compose build --no-cache
 docker compose up
 ```
 
-### Frontend shows "Could not reach backend"
+### SHAP slow on first prediction
+SHAP TreeExplainer initialises once at startup and caches — only the first call per server start has extra latency (~200ms). Subsequent calls are fast (<20ms).
 
-- Confirm the backend is running on port 8000
-- Check `VITE_API_URL` in `frontend/.env.local` (local) or `docker-compose.yml` (Docker)
-- The browser connects to `http://localhost:8000` — if running Docker on a remote server replace `localhost` with the server IP in both `docker-compose.yml` and the browser URL
-
----
-
-## How the UI works
-
-1. Open **http://localhost:3000**
-2. Click **"+ Add Test Patient"** — generates synthetic clinical data, calls `POST /predict`, and renders a `PatientCard`
-3. Click a card to select the patient — the **Trajectory Chart** shows mild/moderate/severe probability lines over illness day
-4. Adjust the sliders in **Treatment Counterfactuals** and click **"Run Simulation"** — four scenario trajectories appear; the recommended one (lowest peak P_severe) is highlighted in green
-5. Click **"Update Outbreak Data"** in the SEIR gauge to submit new weekly case counts and watch the β posterior update live
-6. The amber **Drift Alert Banner** appears automatically via WebSocket when the Page-Hinkley detector flags a feature shift
+### Grafana shows "no data"
+Wait ~60 seconds after startup for Prometheus to scrape the first metrics. Then reload the Grafana dashboard.

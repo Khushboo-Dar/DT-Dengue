@@ -2,26 +2,16 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Dashboard from './components/Dashboard.jsx';
 import { WS_URL } from './api/client.js';
 
-/**
- * Root application component.
- *
- * Global state:
- *   patients       – array of the latest prediction result per patient
- *   patientHistory – { patientId: [{day, mild, moderate, severe}, …] }
- *   driftAlerts    – array of WebSocket drift/retrain events
- *   seir           – most recent SEIR particle-filter stats
- *
- * WebSocket is managed with a useRef to avoid triggering re-renders on
- * connect/disconnect and to ensure a stable reconnect reference.
- */
 export default function App() {
-  const [patients,       setPatients]       = useState([]);
-  const [patientHistory, setPatientHistory] = useState({});
-  const [driftAlerts,    setDriftAlerts]    = useState([]);
-  const [seir,           setSeir]           = useState({});
+  const [patients,        setPatients]        = useState([]);
+  const [patientHistory,  setPatientHistory]  = useState({});
+  const [patientForecasts,setPatientForecasts]= useState({});
+  const [driftAlerts,     setDriftAlerts]     = useState([]);
+  const [seir,            setSeir]            = useState({});
+  const [hospitalData,    setHospitalData]    = useState(null);
   const wsRef = useRef(null);
 
-  // ── WebSocket connection ────────────────────────────────────────────────
+  // ── WebSocket ────────────────────────────────────────────────────────────
   useEffect(() => {
     function connect() {
       const ws = new WebSocket(WS_URL);
@@ -31,17 +21,13 @@ export default function App() {
         try {
           const msg = JSON.parse(ev.data);
           if (msg.type === 'drift' || msg.type === 'retrain') {
-            setDriftAlerts(prev => [msg, ...prev].slice(0, 20)); // cap at 20
+            setDriftAlerts(prev => [msg, ...prev].slice(0, 20));
           }
         } catch { /* ignore malformed frames */ }
       };
 
-      ws.onclose = () => {
-        // Reconnect after 3 s if not intentionally closed
-        setTimeout(connect, 3000);
-      };
+      ws.onclose = () => setTimeout(connect, 3000);
 
-      // Send periodic keepalive pings
       ws.onopen = () => {
         const ping = setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) ws.send('ping');
@@ -54,7 +40,7 @@ export default function App() {
     return () => wsRef.current?.close();
   }, []);
 
-  // ── Callback: new prediction result ────────────────────────────────────
+  // ── Callback: new prediction result ──────────────────────────────────────
   const handleNewPatient = useCallback((result, dayOfIllness) => {
     setPatients(prev => {
       const exists = prev.findIndex(p => p.patient_id === result.patient_id);
@@ -68,32 +54,48 @@ export default function App() {
 
     setPatientHistory(prev => {
       const existing = prev[result.patient_id] ?? [];
-      const newPoint = {
-        day:      dayOfIllness,
-        mild:     result.PSOS.mild,
-        moderate: result.PSOS.moderate,
-        severe:   result.PSOS.severe,
-      };
       return {
         ...prev,
-        [result.patient_id]: [...existing, newPoint],
+        [result.patient_id]: [
+          ...existing,
+          {
+            day:      dayOfIllness,
+            mild:     result.PSOS.mild,
+            moderate: result.PSOS.moderate,
+            severe:   result.PSOS.severe,
+          },
+        ],
       };
     });
   }, []);
 
-  // ── Callback: SEIR update ──────────────────────────────────────────────
+  // ── Callback: forecast updated ───────────────────────────────────────────
+  const handleForecastUpdate = useCallback((patientId, forecastData) => {
+    setPatientForecasts(prev => ({ ...prev, [patientId]: forecastData }));
+  }, []);
+
+  // ── Callback: SEIR update ────────────────────────────────────────────────
   const handleSeirUpdate = useCallback((stats) => {
     setSeir(stats);
+  }, []);
+
+  // ── Callback: hospital data update ──────────────────────────────────────
+  const handleHospitalUpdate = useCallback((data) => {
+    setHospitalData(data);
   }, []);
 
   return (
     <Dashboard
       patients={patients}
       patientHistory={patientHistory}
+      patientForecasts={patientForecasts}
       driftAlerts={driftAlerts}
       seir={seir}
+      hospitalData={hospitalData}
       onNewPatient={handleNewPatient}
+      onForecastUpdate={handleForecastUpdate}
       onSeirUpdate={handleSeirUpdate}
+      onHospitalUpdate={handleHospitalUpdate}
     />
   );
 }

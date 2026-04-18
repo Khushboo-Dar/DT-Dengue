@@ -1,0 +1,93 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.sectionLabel:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-faint);
+}
+
+.error {
+  color: var(--severe);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.warnRef {
+  background: var(--moderate-dim);
+  border: 1px solid var(--moderate);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--moderate);
+  line-height: 1.6;
+}
+
+.warnTitle {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.advToggle {
+  font-size: 12px;
+  padding: 5px 12px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  align-self: flex-start;
+}
+
+.lagsGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.submitBtn {
+  padding: 10px 20px;
+  font-size: 14px;
+  margin-top: 4px;
+}

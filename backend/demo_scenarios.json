@@ -1,0 +1,153 @@
+{
+  "scenarios": [
+    {
+      "id": "classic_deterioration",
+      "name": "Classic Deterioration",
+      "description": "Patient progresses from mild on day 2 to severe by day 5. Platelets drop progressively, HCT rises (plasma leakage), warning signs accumulate. System predicts deterioration before clinical manifestation.",
+      "color": "#E24B4A",
+      "steps": [
+        {
+          "patient_id": "DEMO-A",
+          "day_of_illness": 2,
+          "WBC": 5.2, "Platelets": 145,
+          "Hematocrit": 38.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.1, "pulse_pressure": 40,
+          "warning_signs": 0,
+          "Temp_lag1": 38.5, "Temp_lag2": 38.8, "Temp_lag3": 38.2,
+          "Temp_lag4": 37.9, "Temp_lag5": 37.5, "Temp_lag6": 37.2,
+          "Rain_lag1": 80, "Rain_lag2": 90, "Rain_lag3": 70,
+          "Rain_lag4": 60, "Rain_lag5": 50, "Rain_lag6": 40
+        },
+        {
+          "patient_id": "DEMO-A",
+          "day_of_illness": 3,
+          "WBC": 3.8, "Platelets": 98,
+          "Hematocrit": 41.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.4, "pulse_pressure": 36,
+          "warning_signs": 1,
+          "Temp_lag1": 38.9, "Temp_lag2": 38.5, "Temp_lag3": 38.8,
+          "Temp_lag4": 38.2, "Temp_lag5": 37.9, "Temp_lag6": 37.5,
+          "Rain_lag1": 90, "Rain_lag2": 80, "Rain_lag3": 90,
+          "Rain_lag4": 70, "Rain_lag5": 60, "Rain_lag6": 50
+        },
+        {
+          "patient_id": "DEMO-A",
+          "day_of_illness": 4,
+          "WBC": 2.9, "Platelets": 55,
+          "Hematocrit": 45.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.9, "pulse_pressure": 30,
+          "warning_signs": 2,
+          "Temp_lag1": 38.2, "Temp_lag2": 38.9, "Temp_lag3": 38.5,
+          "Temp_lag4": 38.9, "Temp_lag5": 38.2, "Temp_lag6": 37.9,
+          "Rain_lag1": 95, "Rain_lag2": 90, "Rain_lag3": 80,
+          "Rain_lag4": 90, "Rain_lag5": 70, "Rain_lag6": 60
+        },
+        {
+          "patient_id": "DEMO-A",
+          "day_of_illness": 5,
+          "WBC": 2.1, "Platelets": 22,
+          "Hematocrit": 50.0, "NS1_antigen": 0.0,
+          "AST_ALT_ratio": 3.2, "pulse_pressure": 18,
+          "warning_signs": 4,
+          "Temp_lag1": 37.8, "Temp_lag2": 38.2, "Temp_lag3": 38.9,
+          "Temp_lag4": 38.5, "Temp_lag5": 38.9, "Temp_lag6": 38.2,
+          "Rain_lag1": 100, "Rain_lag2": 95, "Rain_lag3": 90,
+          "Rain_lag4": 80, "Rain_lag5": 90, "Rain_lag6": 70
+        }
+      ]
+    },
+    {
+      "id": "treatment_response",
+      "name": "Treatment Intervention",
+      "description": "Patient on moderate-to-severe trajectory responds to aggressive IV fluid therapy. Demonstrates counterfactual: early treatment keeps P(severe) below 20% vs >75% without intervention.",
+      "color": "#1D9E75",
+      "steps": [
+        {
+          "patient_id": "DEMO-B",
+          "day_of_illness": 3,
+          "WBC": 3.1, "Platelets": 72,
+          "Hematocrit": 44.5, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.7, "pulse_pressure": 28,
+          "warning_signs": 2,
+          "Temp_lag1": 39.1, "Temp_lag2": 38.8, "Temp_lag3": 38.5,
+          "Temp_lag4": 38.2, "Temp_lag5": 37.9, "Temp_lag6": 37.5,
+          "Rain_lag1": 110, "Rain_lag2": 100, "Rain_lag3": 90,
+          "Rain_lag4": 80, "Rain_lag5": 70, "Rain_lag6": 60
+        },
+        {
+          "patient_id": "DEMO-B",
+          "day_of_illness": 4,
+          "WBC": 3.4, "Platelets": 85,
+          "Hematocrit": 42.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.5, "pulse_pressure": 33,
+          "warning_signs": 1,
+          "Temp_lag1": 38.5, "Temp_lag2": 39.1, "Temp_lag3": 38.8,
+          "Temp_lag4": 38.5, "Temp_lag5": 38.2, "Temp_lag6": 37.9,
+          "Rain_lag1": 100, "Rain_lag2": 110, "Rain_lag3": 100,
+          "Rain_lag4": 90, "Rain_lag5": 80, "Rain_lag6": 70
+        }
+      ]
+    },
+    {
+      "id": "outbreak_surge",
+      "name": "Outbreak Surge",
+      "description": "SEIR beta jumps from 0.28 to 0.72 (outbreak). Feed 3 patients and watch how their P(severe) rises as community transmission increases — demonstrating the SEIR→individual coupling.",
+      "color": "#BA7517",
+      "seir_update": { "week_end_date": "2025-08-15", "new_cases": 892 },
+      "steps": [
+        {
+          "patient_id": "DEMO-C1",
+          "day_of_illness": 3,
+          "WBC": 3.9, "Platelets": 88,
+          "Hematocrit": 43.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.3, "pulse_pressure": 34,
+          "warning_signs": 1,
+          "Temp_lag1": 38.4, "Temp_lag2": 38.6, "Temp_lag3": 38.3,
+          "Temp_lag4": 38.0, "Temp_lag5": 37.7, "Temp_lag6": 37.4,
+          "Rain_lag1": 120, "Rain_lag2": 115, "Rain_lag3": 110,
+          "Rain_lag4": 100, "Rain_lag5": 90, "Rain_lag6": 80
+        },
+        {
+          "patient_id": "DEMO-C2",
+          "day_of_illness": 2,
+          "WBC": 4.8, "Platelets": 130,
+          "Hematocrit": 40.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 1.1, "pulse_pressure": 38,
+          "warning_signs": 0,
+          "Temp_lag1": 38.1, "Temp_lag2": 38.4, "Temp_lag3": 38.0,
+          "Temp_lag4": 37.8, "Temp_lag5": 37.5, "Temp_lag6": 37.2,
+          "Rain_lag1": 115, "Rain_lag2": 120, "Rain_lag3": 115,
+          "Rain_lag4": 110, "Rain_lag5": 100, "Rain_lag6": 90
+        },
+        {
+          "patient_id": "DEMO-C3",
+          "day_of_illness": 4,
+          "WBC": 2.8, "Platelets": 62,
+          "Hematocrit": 46.0, "NS1_antigen": 1.0,
+          "AST_ALT_ratio": 2.1, "pulse_pressure": 25,
+          "warning_signs": 3,
+          "Temp_lag1": 38.7, "Temp_lag2": 38.4, "Temp_lag3": 38.6,
+          "Temp_lag4": 38.3, "Temp_lag5": 38.0, "Temp_lag6": 37.7,
+          "Rain_lag1": 125, "Rain_lag2": 120, "Rain_lag3": 115,
+          "Rain_lag4": 110, "Rain_lag5": 105, "Rain_lag6": 100
+        }
+      ]
+    },
+    {
+      "id": "drift_retrain",
+      "name": "Drift + Auto-Retrain",
+      "description": "Feed 20 patients with shifted platelet distributions (unusually high counts representing a different patient population). Watch the Page-Hinkley detector fire and trigger auto-retrain via WebSocket.",
+      "color": "#c579e8",
+      "steps": [
+        {"patient_id": "DEMO-D01","day_of_illness": 3,"WBC": 8.5,"Platelets": 230,"Hematocrit": 38.0,"NS1_antigen": 0.0,"AST_ALT_ratio": 0.9,"pulse_pressure": 42,"warning_signs": 0,"Temp_lag1": 37.2,"Temp_lag2": 37.1,"Temp_lag3": 37.0,"Temp_lag4": 36.9,"Temp_lag5": 36.8,"Temp_lag6": 36.7,"Rain_lag1": 10,"Rain_lag2": 8,"Rain_lag3": 5,"Rain_lag4": 3,"Rain_lag5": 2,"Rain_lag6": 1},
+        {"patient_id": "DEMO-D02","day_of_illness": 2,"WBC": 9.1,"Platelets": 245,"Hematocrit": 37.5,"NS1_antigen": 0.0,"AST_ALT_ratio": 0.8,"pulse_pressure": 44,"warning_signs": 0,"Temp_lag1": 37.0,"Temp_lag2": 37.0,"Temp_lag3": 36.9,"Temp_lag4": 36.8,"Temp_lag5": 36.7,"Temp_lag6": 36.6,"Rain_lag1": 8,"Rain_lag2": 6,"Rain_lag3": 4,"Rain_lag4": 2,"Rain_lag5": 1,"Rain_lag6": 0},
+        {"patient_id": "DEMO-D03","day_of_illness": 4,"WBC": 7.8,"Platelets": 220,"Hematocrit": 39.0,"NS1_antigen": 0.0,"AST_ALT_ratio": 0.95,"pulse_pressure": 41,"warning_signs": 0,"Temp_lag1": 37.3,"Temp_lag2": 37.2,"Temp_lag3": 37.1,"Temp_lag4": 37.0,"Temp_lag5": 36.9,"Temp_lag6": 36.8,"Rain_lag1": 12,"Rain_lag2": 10,"Rain_lag3": 8,"Rain_lag4": 5,"Rain_lag5": 3,"Rain_lag6": 2},
+        {"patient_id": "DEMO-D04","day_of_illness": 1,"WBC": 9.5,"Platelets": 260,"Hematocrit": 37.0,"NS1_antigen": 1.0,"AST_ALT_ratio": 0.85,"pulse_pressure": 45,"warning_signs": 0,"Temp_lag1": 37.1,"Temp_lag2": 37.0,"Temp_lag3": 36.9,"Temp_lag4": 36.8,"Temp_lag5": 36.7,"Temp_lag6": 36.6,"Rain_lag1": 9,"Rain_lag2": 7,"Rain_lag3": 5,"Rain_lag4": 3,"Rain_lag5": 2,"Rain_lag6": 1},
+        {"patient_id": "DEMO-D05","day_of_illness": 3,"WBC": 8.2,"Platelets": 235,"Hematocrit": 38.5,"NS1_antigen": 0.0,"AST_ALT_ratio": 0.92,"pulse_pressure": 43,"warning_signs": 0,"Temp_lag1": 37.2,"Temp_lag2": 37.1,"Temp_lag3": 37.0,"Temp_lag4": 36.9,"Temp_lag5": 36.8,"Temp_lag6": 36.7,"Rain_lag1": 11,"Rain_lag2": 9,"Rain_lag3": 7,"Rain_lag4": 4,"Rain_lag5": 3,"Rain_lag6": 2},
+        {"patient_id": "DEMO-D06","day_of_illness": 2,"WBC": 10.1,"Platelets": 255,"Hematocrit": 37.2,"NS1_antigen": 0.0,"AST_ALT_ratio": 0.88,"pulse_pressure": 44,"warning_signs": 0,"Temp_lag1": 37.0,"Temp_lag2": 37.0,"Temp_lag3": 37.0,"Temp_lag4": 36.9,"Temp_lag5": 36.8,"Temp_lag6": 36.7,"Rain_lag1": 7,"Rain_lag2": 5,"Rain_lag3": 4,"Rain_lag4": 2,"Rain_lag5": 1,"Rain_lag6": 0},
+        {"patient_id": "DEMO-D07","day_of_illness": 5,"WBC": 7.6,"Platelets": 210,"Hematocrit": 39.5,"NS1_antigen": 0.0,"AST_ALT_ratio": 0.98,"pulse_pressure": 40,"warning_signs": 0,"Temp_lag1": 37.4,"Temp_lag2": 37.3,"Temp_lag3": 37.2,"Temp_lag4": 37.1,"Temp_lag5": 37.0,"Temp_lag6": 36.9,"Rain_lag1": 13,"Rain_lag2": 11,"Rain_lag3": 9,"Rain_lag4": 6,"Rain_lag5": 4,"Rain_lag6": 2},
+        {"patient_id": "DEMO-D08","day_of_illness": 3,"WBC": 8.8,"Platelets": 240,"Hematocrit": 38.0,"NS1_antigen": 1.0,"AST_ALT_ratio": 0.91,"pulse_pressure": 42,"warning_signs": 0,"Temp_lag1": 37.2,"Temp_lag2": 37.1,"Temp_lag3": 37.0,"Temp_lag4": 36.9,"Temp_lag5": 36.8,"Temp_lag6": 36.7,"Rain_lag1": 10,"Rain_lag2": 8,"Rain_lag3": 6,"Rain_lag4": 4,"Rain_lag5": 3,"Rain_lag6": 2}
+      ]
+    }
+  ]
+}

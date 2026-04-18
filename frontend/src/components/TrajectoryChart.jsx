@@ -5,7 +5,7 @@ import {
 import styles from './TrajectoryChart.module.css';
 
 const C_MILD     = '#1D9E75';
-const C_MODERATE = '#BA7517';
+const C_MODERATE = '#E8933A';
 const C_SEVERE   = '#E24B4A';
 
 function CustomTooltip({ active, payload, label }) {
