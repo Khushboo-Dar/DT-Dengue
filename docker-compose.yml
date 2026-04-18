@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# d3t/docker-compose.yml
+
+>>>>>>> 397f32120c5aabcc15ec9422851cb6a64ea02899
 services:
   redis:
     image: redis:7-alpine
