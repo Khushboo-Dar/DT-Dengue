@@ -103,11 +103,26 @@
 /* ── Patients tab layout ──────────────────────────────────────────────────── */
 .patientsLayout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 250px 1fr 350px;
   gap: 0;
   flex: 1;
   align-items: start;
   padding: 16px 20px;
+}
+
+/* ── Human Twin center pane ──────────────────────────────────────────────── */
+.twinPane {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 8px;
+  min-height: 480px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: calc(100vh - 72px);
+  position: sticky;
+  top: 56px;
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
@@ -355,10 +370,32 @@
   padding: 18px 20px 20px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+  .patientsLayout {
+    grid-template-columns: 250px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .twinPane {
+    grid-column: 2;
+    grid-row: 1;
+    border-right: none;
+    position: static;
+    max-height: none;
+  }
+  .detail {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding-left: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 750px) {
   .patientsLayout { grid-template-columns: 1fr; padding: 12px; }
+  .twinPane { grid-column: 1; border-left: none; border-right: none; }
   .sidebar { position: static; max-height: none; padding-right: 0; }
-  .detail { padding-left: 0; padding-top: 16px; }
+  .detail { grid-column: 1; padding-left: 0; padding-top: 16px; }
   .topbar { gap: 8px; }
   .tabRow { margin-left: 0; }
   .modal { max-width: 100%; }

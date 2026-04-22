@@ -1,0 +1,274 @@
+/* ── HumanTwin wrapper ──────────────────────────────────────────────────── */
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 8px;
+  user-select: none;
+}
+
+/* Severity badge above body */
+.severityBadge {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  transition: color 0.6s ease;
+}
+.severityBadge.mild     { color: var(--mild); }
+.severityBadge.moderate { color: var(--moderate); }
+.severityBadge.severe   { color: var(--severe); }
+
+.severityLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+  transition: color 0.6s ease;
+}
+.severityLabel.mild     { color: var(--mild); }
+.severityLabel.moderate { color: var(--moderate); }
+.severityLabel.severe   { color: var(--severe); }
+
+/* SVG body container + floating badges */
+.bodyRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+}
+
+.svgBody {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* Floating vital badge columns */
+.badgesLeft,
+.badgesRight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 90px;
+}
+.badgesLeft  { align-items: flex-end; }
+.badgesRight { align-items: flex-start; }
+
+.vitalBadge {
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius);
+  padding: 6px 9px;
+  min-width: 78px;
+  text-align: center;
+  transition: border-color 0.5s ease;
+}
+.vitalBadge.critical { border-color: var(--severe); }
+.vitalBadge.warning  { border-color: var(--moderate); }
+
+.badgeLabel {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-faint);
+}
+.badgeValue {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text);
+  line-height: 1.2;
+  transition: color 0.5s ease;
+}
+.badgeTrend {
+  font-size: 10px;
+  margin-left: 3px;
+}
+.vitalBadge.critical .badgeValue { color: var(--severe); }
+.vitalBadge.warning  .badgeValue { color: var(--moderate); }
+.vitalBadge.normal   .badgeValue { color: var(--mild); }
+
+/* Day of illness below body */
+.dayLabel {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+/* Shock risk banner above SVG */
+.shockBanner {
+  background: var(--severe-dim);
+  border: 1px solid var(--severe);
+  border-radius: var(--radius-sm);
+  color: var(--severe);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  animation: shockPulse 0.7s ease-in-out infinite;
+}
+
+/* ── ECG Waveform Strip ──────────────────────────────────────────────────── */
+.ecgWrap {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #0a0d14;
+}
+
+.ecgCanvas {
+  display: block;
+  width: 100%;
+  height: 56px;
+}
+
+/* ── Interactive Sliders ─────────────────────────────────────────────────── */
+.sliderSection {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sliderToggle {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 14px;
+  cursor: pointer;
+}
+.sliderToggle:hover { color: var(--text); border-color: var(--border-bright); }
+
+.sliderGrid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.sliderRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sliderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.sliderLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.sliderValue {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text);
+  transition: color 0.3s ease;
+}
+.sliderValue.sliderDanger { color: var(--severe); }
+
+.sliderUnit {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.rangeInput {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.rangeInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 6px rgba(74,158,255,0.4);
+  transition: transform 0.1s ease;
+}
+.rangeInput::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+.rangeInput::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+}
+
+.resetBtn {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 12px;
+}
+.resetBtn:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+  gap: 14px;
+  color: var(--text-faint);
+  text-align: center;
+  padding: 24px;
+}
+.emptyIcon {
+  opacity: 0.25;
+}
+.emptyText {
+  font-size: 13px;
+  color: var(--text-dim);
+  max-width: 200px;
+  line-height: 1.6;
+}
+
+/* Keyframes are defined globally in index.css so they work with inline style props */

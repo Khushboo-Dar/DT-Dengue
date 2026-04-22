@@ -9,6 +9,7 @@ import SHAPChart            from './SHAPChart.jsx';
 import HospitalPanel        from './HospitalPanel.jsx';
 import MetricsPanel         from './MetricsPanel.jsx';
 import PatientAdmissionForm from './PatientAdmissionForm.jsx';
+import HumanTwin            from './HumanTwin.jsx';
 import { predict, runDemoScenario } from '../api/client.js';
 import styles from './Dashboard.module.css';
 
@@ -72,7 +73,7 @@ export default function Dashboard({
     setAddError('');
     try {
       const result = await predict(payload);
-      onNewPatient(result, payload.day_of_illness);
+      onNewPatient(result, payload.day_of_illness, payload);
       setSelectedId(result.patient_id);
       setShowForm(false);
     } catch (e) {
@@ -84,7 +85,7 @@ export default function Dashboard({
 
   function handleDemoRun(result) {
     result.results.forEach((r, i) => {
-      onNewPatient(r, result.results[i]?.PSOS ? 3 : 3);
+      onNewPatient(r, result.results[i]?.PSOS ? 3 : 3, null);
     });
     if (result.results.length) {
       setSelectedId(result.results[0].patient_id);
@@ -120,7 +121,7 @@ export default function Dashboard({
       {/* ══ TAB: Patients ══════════════════════════════════════════════════ */}
       {activeTab === 'Patients' && (
         <div className={styles.patientsLayout}>
-          {/* ── Sidebar ────────────────────────────────────────────────── */}
+          {/* ── Col 1: Sidebar ─────────────────────────────────────────── */}
           <aside className={styles.sidebar}>
             <div className={styles.sideHeader}>
               <h2>Patients <span className={styles.count}>{patients.length}</span></h2>
@@ -150,14 +151,19 @@ export default function Dashboard({
             <SEIRStatus seir={seir} onUpdate={onSeirUpdate} />
           </aside>
 
-          {/* ── Detail pane ────────────────────────────────────────────── */}
+          {/* ── Col 2: Animated Human Twin ─────────────────────────────── */}
+          <div className={styles.twinPane}>
+            <HumanTwin patient={selected ?? null} />
+          </div>
+
+          {/* ── Col 3: Charts / Details ────────────────────────────────── */}
           <main className={styles.detail}>
             {!selected ? (
               <div className={styles.placeholder}>
                 <div className={styles.placeholderIcon}>⬡</div>
-                <p>Select a patient to view their digital twin.</p>
+                <p>Select a patient to view charts &amp; analysis.</p>
                 <p className={styles.placeholderSub}>
-                  Prediction · 7-day forecast · Treatment simulation · SHAP explainability
+                  7-day forecast · Treatment simulation · SHAP explainability
                 </p>
               </div>
             ) : (

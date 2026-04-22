@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-# d3t/docker-compose.yml
-
->>>>>>> 397f32120c5aabcc15ec9422851cb6a64ea02899
 services:
   redis:
     image: redis:7-alpine
@@ -34,31 +29,5 @@ services:
     depends_on:
       - backend
 
-  prometheus:
-    image: prom/prometheus:v2.52.0
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.retention.time=7d'
-    depends_on:
-      - backend
-
-  grafana:
-    image: grafana/grafana:10.4.2
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=d3t_admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-    depends_on:
-      - prometheus
-
 volumes:
   redis_data:
-  grafana_data:

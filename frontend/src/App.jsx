@@ -41,15 +41,16 @@ export default function App() {
   }, []);
 
   // ── Callback: new prediction result ──────────────────────────────────────
-  const handleNewPatient = useCallback((result, dayOfIllness) => {
+  const handleNewPatient = useCallback((result, dayOfIllness, formPayload) => {
+    const entry = { ...result, inputs: formPayload ?? null, dayOfIllness };
     setPatients(prev => {
       const exists = prev.findIndex(p => p.patient_id === result.patient_id);
       if (exists >= 0) {
         const next = [...prev];
-        next[exists] = result;
+        next[exists] = entry;
         return next;
       }
-      return [result, ...prev];
+      return [entry, ...prev];
     });
 
     setPatientHistory(prev => {
