@@ -1,0 +1,23 @@
+.reportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--purple-dim);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.reportBtn:hover:not(:disabled) {
+  background: rgba(197, 121, 232, 0.25);
+}
+
+.reportBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

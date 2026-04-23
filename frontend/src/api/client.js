@@ -54,6 +54,14 @@ export async function runDemoScenario(scenarioId) {
   return data;
 }
 
+export async function getWeatherLags(lat, lon) {
+  const params = {};
+  if (lat != null) params.lat = lat;
+  if (lon != null) params.lon = lon;
+  const { data } = await api.get('/weather/lags', { params });
+  return data;
+}
+
 export const WS_URL =
   (import.meta.env.VITE_API_URL || 'http://localhost:8000')
     .replace(/^http/, 'ws') + '/ws/alerts';

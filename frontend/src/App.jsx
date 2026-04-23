@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Dashboard from './components/Dashboard.jsx';
+import LandingPage from './components/LandingPage.jsx';
 import { WS_URL } from './api/client.js';
 
 export default function App() {
+  const [showDashboard, setShowDashboard] = useState(false);
   const [patients,        setPatients]        = useState([]);
   const [patientHistory,  setPatientHistory]  = useState({});
   const [patientForecasts,setPatientForecasts]= useState({});
@@ -13,6 +15,8 @@ export default function App() {
 
   // ── WebSocket ────────────────────────────────────────────────────────────
   useEffect(() => {
+    if (!showDashboard) return;
+
     function connect() {
       const ws = new WebSocket(WS_URL);
       wsRef.current = ws;
@@ -38,7 +42,7 @@ export default function App() {
 
     connect();
     return () => wsRef.current?.close();
-  }, []);
+  }, [showDashboard]);
 
   // ── Callback: new prediction result ──────────────────────────────────────
   const handleNewPatient = useCallback((result, dayOfIllness, formPayload) => {
@@ -84,6 +88,10 @@ export default function App() {
   const handleHospitalUpdate = useCallback((data) => {
     setHospitalData(data);
   }, []);
+
+  if (!showDashboard) {
+    return <LandingPage onEnter={() => setShowDashboard(true)} />;
+  }
 
   return (
     <Dashboard

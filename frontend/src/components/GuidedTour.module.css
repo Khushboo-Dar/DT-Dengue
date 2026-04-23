@@ -1,0 +1,134 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  animation: tourIn 0.3s ease;
+}
+
+@keyframes tourIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.spotlight {
+  position: fixed;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+  border: 2px solid var(--accent);
+  z-index: 10000;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.tooltip {
+  position: fixed;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  max-width: 340px;
+  min-width: 280px;
+  z-index: 10001;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  animation: tooltipIn 0.25s ease;
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; }
+}
+
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.stepCounter {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.tooltipTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  flex: 1;
+}
+
+.closeBtn {
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover { color: var(--text); }
+
+.tooltipContent {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.tooltipActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.backBtn {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  border-radius: var(--radius);
+}
+
+.nextBtn {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 18px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius);
+}
+
+.nextBtn:hover { background: #3a8ef0 !important; }
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-bright);
+  transition: background 0.2s;
+}
+
+.dotActive {
+  background: var(--accent);
+  transform: scale(1.3);
+}
+
+.dotDone {
+  background: var(--accent);
+  opacity: 0.5;
+}

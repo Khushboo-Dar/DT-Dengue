@@ -29,6 +29,7 @@ from forecaster import forecast_patient
 from outcomes_db import count_severe_today, init_db, insert_outcome, get_outcomes_for_patient
 from retrain_pipeline import retrain_model
 from seir_particle_filter import SEIRParticleFilter
+from weather_api import get_weather_lags
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JSON NaN/Inf sanitizer — Python's json.dumps rejects float('nan')
@@ -570,6 +571,20 @@ async def run_demo_scenario(scenario_id: str, background_tasks: BackgroundTasks)
         "seir_update":   seir_update_result,
         "results":       results,
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Endpoint — GET /weather/lags  (real weather from Open-Meteo)
+# ─────────────────────────────────────────────────────────────────────────────
+@app.get("/weather/lags")
+async def weather_lags(lat: float = 3.139, lon: float = 101.687):
+    """
+    Fetch real 6-day temperature and rainfall history from Open-Meteo API.
+    Default location: Kuala Lumpur, Malaysia.
+    """
+    data = await get_weather_lags(lat, lon)
+    _ok("WEATHER", f"Fetched weather lags for ({lat:.2f}, {lon:.2f})")
+    return data
 
 
 # ─────────────────────────────────────────────────────────────────────────────

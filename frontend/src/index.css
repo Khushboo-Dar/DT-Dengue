@@ -1,4 +1,4 @@
-:root {
+:root, [data-theme="dark"] {
   --severe:        #E24B4A;
   --severe-dim:    rgba(226, 75, 74, 0.15);
   --moderate:      #E8933A;
@@ -34,6 +34,28 @@
 
   --skin-base:     #c8a882;
   --skin-fever:    #d96a3a;
+}
+
+[data-theme="light"] {
+  --bg:            #f4f5f7;
+  --bg2:           #ebedf0;
+  --surface:       #ffffff;
+  --surface2:      #f0f1f4;
+  --border:        #d4d7e0;
+  --border-bright: #bfc3cf;
+
+  --text:          #1a1d27;
+  --text-dim:      #5a5d6a;
+  --text-faint:    #9a9daa;
+
+  --shadow:        0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,0.12);
+
+  --accent-dim:    rgba(74, 158, 255, 0.12);
+  --severe-dim:    rgba(226, 75, 74, 0.1);
+  --moderate-dim:  rgba(232, 147, 58, 0.1);
+  --mild-dim:      rgba(29, 158, 117, 0.1);
+  --purple-dim:    rgba(197, 121, 232, 0.1);
 }
 
 *, *::before, *::after {

@@ -271,4 +271,34 @@
   line-height: 1.6;
 }
 
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .badgesLeft, .badgesRight {
+    width: 72px;
+    gap: 6px;
+  }
+  .vitalBadge { padding: 4px 6px; min-width: 64px; }
+  .badgeValue { font-size: 12px; }
+  .ecgWrap { max-width: 100%; }
+  .sliderSection { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .bodyRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .badgesLeft, .badgesRight {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+  }
+  .severityBadge { font-size: 22px; }
+  .svgBody { width: 200px !important; height: auto !important; }
+  .ecgCanvas { height: 44px; }
+}
+
 /* Keyframes are defined globally in index.css so they work with inline style props */

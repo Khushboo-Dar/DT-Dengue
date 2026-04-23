@@ -1,0 +1,241 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0%, #0f1a2e 0%, var(--bg) 70%);
+  padding: 40px 20px;
+  animation: landingIn 0.6s ease;
+}
+
+@keyframes landingIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fadeOut {
+  animation: landingOut 0.4s ease forwards;
+}
+
+@keyframes landingOut {
+  to { opacity: 0; transform: scale(1.02); }
+}
+
+/* ── Background particles ───────────────────────────────────────────────── */
+.bgGrid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  animation: particleFloat infinite ease-in-out;
+}
+
+@keyframes particleFloat {
+  0%, 100% { opacity: 0; transform: translateY(0) scale(0.5); }
+  50%      { opacity: 0.4; transform: translateY(-30px) scale(1); }
+}
+
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+.hero {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(74, 158, 255, 0.25);
+  margin-bottom: 20px;
+  animation: slideUp 0.6s ease 0.1s both;
+}
+
+.title {
+  animation: slideUp 0.6s ease 0.2s both;
+}
+
+.d3t {
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 50%, var(--severe) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+  animation: slideUp 0.6s ease 0.3s both;
+}
+
+.tagline {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-top: 16px;
+  animation: slideUp 0.6s ease 0.4s both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Enter button ───────────────────────────────────────────────────────── */
+.enterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 14px 36px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: slideUp 0.6s ease 0.5s both;
+}
+
+.enterBtn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 30px rgba(74, 158, 255, 0.35) !important;
+}
+
+.enterBtn:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+.arrow {
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.enterBtn:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* ── Stats ──────────────────────────────────────────────────────────────── */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 36px;
+  animation: slideUp 0.6s ease 0.6s both;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.statNum {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Feature cards ──────────────────────────────────────────────────────── */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 900px;
+  margin-top: 56px;
+  position: relative;
+  z-index: 1;
+}
+
+.featureCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: border-color 0.2s, transform 0.2s;
+  animation: slideUp 0.5s ease both;
+}
+
+.featureCard:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.featureIcon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.featureTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+}
+
+.featureDesc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.footer {
+  margin-top: 48px;
+  font-size: 12px;
+  color: var(--text-faint);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .d3t { font-size: 52px; }
+  .subtitle { font-size: 18px; }
+  .features { grid-template-columns: 1fr; max-width: 400px; }
+  .stats { gap: 20px; flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .d3t { font-size: 40px; }
+  .tagline { font-size: 13px; }
+  .enterBtn { padding: 12px 28px; font-size: 14px; }
+}

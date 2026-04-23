@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getWeatherLags } from '../api/client.js';
 import styles from './PatientAdmissionForm.module.css';
 
 const DEFAULT_FORM = {
@@ -29,6 +30,23 @@ export default function PatientAdmissionForm({ onSubmit, loading }) {
   const [form, setForm] = useState({ ...DEFAULT_FORM, patient_id: generateId() });
   const [errors, setErrors] = useState({});
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [weatherStatus, setWeatherStatus] = useState(''); // '' | 'loading' | 'done' | 'error'
+
+  // Auto-fetch real weather data on mount
+  useEffect(() => {
+    setWeatherStatus('loading');
+    getWeatherLags()
+      .then(data => {
+        setForm(prev => ({
+          ...prev,
+          ...Object.fromEntries(
+            Object.entries(data).map(([k, v]) => [k, String(v)])
+          ),
+        }));
+        setWeatherStatus('done');
+      })
+      .catch(() => setWeatherStatus('error'));
+  }, []);
 
   function set(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -122,10 +140,20 @@ export default function PatientAdmissionForm({ onSubmit, loading }) {
         </div>
       )}
 
-      <button type="button" className={styles.advToggle}
-        onClick={() => setShowAdvanced(v => !v)}>
-        {showAdvanced ? '▲ Hide' : '▼ Show'} temperature &amp; rainfall lags
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+        <button type="button" className={styles.advToggle}
+          onClick={() => setShowAdvanced(v => !v)}>
+          {showAdvanced ? '\u25B2 Hide' : '\u25BC Show'} temperature &amp; rainfall lags
+        </button>
+        {weatherStatus === 'done' && (
+          <span style={{ fontSize: 11, color: 'var(--mild)' }}>
+            Real weather data loaded (Open-Meteo)
+          </span>
+        )}
+        {weatherStatus === 'loading' && (
+          <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>Fetching weather...</span>
+        )}
+      </div>
 
       {showAdvanced && (
         <div className={styles.lagsGrid}>

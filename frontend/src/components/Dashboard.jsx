@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import DriftAlertBanner     from './DriftAlertBanner.jsx';
 import PatientCard          from './PatientCard.jsx';
 import TrajectoryChart      from './TrajectoryChart.jsx';
@@ -10,10 +10,21 @@ import HospitalPanel        from './HospitalPanel.jsx';
 import MetricsPanel         from './MetricsPanel.jsx';
 import PatientAdmissionForm from './PatientAdmissionForm.jsx';
 import HumanTwin            from './HumanTwin.jsx';
+import GuidedTour           from './GuidedTour.jsx';
+import ThemeToggle          from './ThemeToggle.jsx';
+import LanguageSelector     from './LanguageSelector.jsx';
+import RoleSelector, { ROLES } from './RoleSelector.jsx';
+import { useLanguage }      from '../i18n/LanguageContext.jsx';
+import PatientReport        from './PatientReport.jsx';
+import PatientTimeline      from './PatientTimeline.jsx';
 import { predict, runDemoScenario } from '../api/client.js';
 import styles from './Dashboard.module.css';
 
-const TABS = ['Patients', 'Hospital', 'Model Metrics'];
+const TAB_KEYS = [
+  { key: 'Patients', i18n: 'dash.patients' },
+  { key: 'Hospital', i18n: 'dash.hospital' },
+  { key: 'Model Metrics', i18n: 'dash.metrics' },
+];
 
 function DemoScenarioBar({ onDemoRun }) {
   const [running, setRunning] = useState(null);
@@ -65,8 +76,41 @@ export default function Dashboard({
   const [adding,      setAdding]      = useState(false);
   const [addError,    setAddError]    = useState('');
   const [detailTab,   setDetailTab]   = useState('forecast'); // 'forecast' | 'trajectory' | 'cf' | 'shap'
+  const [autoLoading, setAutoLoading] = useState(false);
+  const [showTour,    setShowTour]    = useState(false);
+  const [role,        setRole]        = useState('all');
+  const autoLoadedRef = useRef(false);
+  const { t } = useLanguage();
+
+  const visibleTabs = TAB_KEYS.filter(tab => ROLES[role].tabs.includes(tab.key));
 
   const selected = patients.find(p => p.patient_id === selectedId);
+
+  // ── Auto-load demo data on first mount ──────────────────────────────────
+  useEffect(() => {
+    if (autoLoadedRef.current || patients.length > 0) return;
+    autoLoadedRef.current = true;
+    setAutoLoading(true);
+
+    (async () => {
+      try {
+        // Run the deterioration demo to get a patient with history
+        const det = await runDemoScenario('classic_deterioration');
+        det.results.forEach(r => onNewPatient(r, r.ekf_state?.days_tracked ?? 3, null));
+
+        // Run outbreak surge for 3 more patients
+        const outbreak = await runDemoScenario('outbreak_surge');
+        outbreak.results.forEach(r => onNewPatient(r, r.ekf_state?.days_tracked ?? 3, null));
+
+        // Select the first patient
+        if (det.results.length) setSelectedId(det.results[det.results.length - 1].patient_id);
+      } catch {
+        // Backend not ready — user can manually admit patients
+      } finally {
+        setAutoLoading(false);
+      }
+    })();
+  }, []);
 
   async function handleAdmit(payload) {
     setAdding(true);
@@ -101,15 +145,19 @@ export default function Dashboard({
           <span className={styles.brandName}>D3T</span>
           <span className={styles.brandSub}>Dynamic Dengue Digital Twin</span>
         </div>
-        <DemoScenarioBar onDemoRun={handleDemoRun} />
-        <div className={styles.tabRow}>
-          {TABS.map(t => (
+        <div data-tour="demo-bar"><DemoScenarioBar onDemoRun={handleDemoRun} /></div>
+        <RoleSelector role={role} onRoleChange={(r) => { setRole(r); setActiveTab(ROLES[r].defaultTab); }} />
+        <LanguageSelector />
+        <ThemeToggle />
+        <button className={styles.tourBtn} onClick={() => setShowTour(true)} title="Guided Tour">?</button>
+        <div className={styles.tabRow} data-tour="tabs">
+          {visibleTabs.map(tab => (
             <button
-              key={t}
-              className={`${styles.tab} ${activeTab === t ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab(t)}
+              key={tab.key}
+              className={`${styles.tab} ${activeTab === tab.key ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab(tab.key)}
             >
-              {t}
+              {t(tab.i18n)}
             </button>
           ))}
         </div>
@@ -122,19 +170,22 @@ export default function Dashboard({
       {activeTab === 'Patients' && (
         <div className={styles.patientsLayout}>
           {/* ── Col 1: Sidebar ─────────────────────────────────────────── */}
-          <aside className={styles.sidebar}>
+          <aside className={styles.sidebar} data-tour="sidebar">
             <div className={styles.sideHeader}>
               <h2>Patients <span className={styles.count}>{patients.length}</span></h2>
               <button
                 className={`${styles.admitBtn} btn-primary`}
+                data-tour="admit-btn"
                 onClick={() => setShowForm(true)}
               >
-                + Admit Patient
+                {t('dash.admit')}
               </button>
             </div>
 
             {patients.length === 0 && (
-              <p className={styles.empty}>Click "Admit Patient" or run a demo scenario to begin.</p>
+              <p className={styles.empty}>
+                {autoLoading ? t('dash.loading') : t('dash.empty')}
+              </p>
             )}
 
             <div className={styles.patientList}>
@@ -152,19 +203,17 @@ export default function Dashboard({
           </aside>
 
           {/* ── Col 2: Animated Human Twin ─────────────────────────────── */}
-          <div className={styles.twinPane}>
+          <div className={styles.twinPane} data-tour="twin-pane">
             <HumanTwin patient={selected ?? null} />
           </div>
 
           {/* ── Col 3: Charts / Details ────────────────────────────────── */}
-          <main className={styles.detail}>
+          <main className={styles.detail} data-tour="detail-pane">
             {!selected ? (
               <div className={styles.placeholder}>
                 <div className={styles.placeholderIcon}>⬡</div>
-                <p>Select a patient to view charts &amp; analysis.</p>
-                <p className={styles.placeholderSub}>
-                  7-day forecast · Treatment simulation · SHAP explainability
-                </p>
+                <p>{t('dash.selectPatient')}</p>
+                <p className={styles.placeholderSub}>{t('dash.selectSub')}</p>
               </div>
             ) : (
               <div className="fade-in">
@@ -185,16 +234,22 @@ export default function Dashboard({
                       color={selected.PSOS?.severe > 0.5 ? 'var(--severe)' :
                              selected.PSOS?.severe > 0.3 ? 'var(--moderate)' : 'var(--mild)'} />
                     <MetaChip label="Inference" value={`${selected.inference_ms}ms`} />
+                    <PatientReport
+                      patient={selected}
+                      history={patientHistory[selectedId]}
+                      forecast={patientForecasts[selectedId]}
+                    />
                   </div>
                 </div>
 
                 {/* Inner tab bar */}
                 <div className={styles.innerTabs}>
                   {[
-                    ['forecast',    '7-Day Forecast'],
-                    ['trajectory',  'Trajectory'],
-                    ['cf',          'Treatment Sim'],
-                    ['shap',        'SHAP Why?'],
+                    ['forecast',    t('tab.forecast')],
+                    ['timeline',    t('tab.timeline')],
+                    ['trajectory',  t('tab.trajectory')],
+                    ['cf',          t('tab.treatment')],
+                    ['shap',        t('tab.shap')],
                   ].map(([key, label]) => (
                     <button
                       key={key}
@@ -211,6 +266,12 @@ export default function Dashboard({
                     patientId={selectedId}
                     forecast={patientForecasts[selectedId]}
                     onForecastLoaded={onForecastUpdate}
+                  />
+                )}
+                {detailTab === 'timeline' && (
+                  <PatientTimeline
+                    history={patientHistory[selectedId] ?? []}
+                    patient={selected}
                   />
                 )}
                 {detailTab === 'trajectory' && (
@@ -251,8 +312,8 @@ export default function Dashboard({
           <div className={`${styles.modal} fade-in`} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <div>
-                <h2>Admit New Patient</h2>
-                <p className={styles.modalSub}>Enter clinical values — press Run Inference to predict severity</p>
+                <h2>{t('form.title')}</h2>
+                <p className={styles.modalSub}>{t('form.subtitle')}</p>
               </div>
               <button className={styles.modalClose} onClick={() => setShowForm(false)}>✕</button>
             </div>
@@ -263,6 +324,8 @@ export default function Dashboard({
           </div>
         </div>
       )}
+
+      <GuidedTour active={showTour} onClose={() => setShowTour(false)} />
     </div>
   );
 }

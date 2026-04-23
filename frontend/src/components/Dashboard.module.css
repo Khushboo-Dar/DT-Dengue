@@ -75,6 +75,29 @@
   background: var(--surface2) !important;
 }
 
+/* Tour button */
+.tourBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.tourBtn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
 /* Tabs */
 .tabRow {
   display: flex;
@@ -393,10 +416,23 @@
 
 @media (max-width: 750px) {
   .patientsLayout { grid-template-columns: 1fr; padding: 12px; }
-  .twinPane { grid-column: 1; border-left: none; border-right: none; }
+  .twinPane { grid-column: 1; border-left: none; border-right: none; min-height: 320px; position: static; max-height: none; }
   .sidebar { position: static; max-height: none; padding-right: 0; }
   .detail { grid-column: 1; padding-left: 0; padding-top: 16px; }
-  .topbar { gap: 8px; }
+  .topbar { gap: 8px; padding: 8px 12px; }
   .tabRow { margin-left: 0; }
   .modal { max-width: 100%; }
+  .brand { margin-right: 0; }
+  .brandSub { display: none; }
+  .demoBar { gap: 4px; }
+  .demoBtn { font-size: 10px; padding: 3px 8px; }
+  .detailHeader { flex-direction: column; align-items: flex-start; }
+  .detailMeta { width: 100%; }
+  .innerTabs { overflow-x: auto; flex-wrap: nowrap; }
+  .innerTab { white-space: nowrap; flex-shrink: 0; }
+}
+
+@media (max-width: 480px) {
+  .sideHeader { flex-direction: column; gap: 6px; align-items: stretch; }
+  .patientList { max-height: 30vh; }
 }
